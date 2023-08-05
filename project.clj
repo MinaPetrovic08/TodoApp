@@ -3,8 +3,23 @@
   :url "http://example.com/FIXME"
   :license {:name "EPL-2.0 OR GPL-2.0-or-later WITH Classpath-exception-2.0"
             :url "https://www.eclipse.org/legal/epl-2.0/"}
-  :dependencies [[org.clojure/clojure "1.11.1"]]
-  :main ^:skip-aot clojure-todo-app.core
+  :dependencies [[org.clojure/clojure "1.9.0"]
+                 [com.stuartsierra/component "0.3.2"]
+                 [org.danielsz/system "0.4.1"]
+
+                 [org.clojure/java.jdbc "0.7.8"]
+                 [org.postgresql/postgresql "42.2.4"]
+                 [korma "0.4.3"]
+
+                 [io.pedestal/pedestal.service "0.5.4"]
+                 [io.pedestal/pedestal.jetty "0.5.4"]
+
+                 [org.slf4j/log4j-over-slf4j "1.7.25"]]
+
+  :main ^{:skip-aot true} clojure-todo-app.system
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all
-                       :jvm-opts ["-Dclojure.compiler.direct-linking=true"]}})
+                       :jvm-opts ["-Dclojure.compiler.direct-linking=true"]}}
+  :min-lein-version "2.0.0"
+  :resource-paths ["config", "resources"])
+
