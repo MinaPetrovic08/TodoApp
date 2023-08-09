@@ -30,3 +30,7 @@ clj꞉clojure-todo-app.system꞉> 
 system
 #function[clojure-todo-app.system/system]
 clj꞉clojure-todo-app.system꞉> 
+clj꞉clojure-todo-app.system꞉> 
+; nREPL connection failed: Error: read ECONNRESET
+; Failed connecting.
+; nREPL Connection was closed

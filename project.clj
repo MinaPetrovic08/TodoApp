@@ -5,7 +5,8 @@
             :url "https://www.eclipse.org/legal/epl-2.0/"}
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [com.stuartsierra/component "0.3.2"]
-                 [org.danielsz/system "0.4.1"]
+
+                 [hiccup "1.0.5"]
 
                  [org.clojure/java.jdbc "0.7.8"]
                  [org.postgresql/postgresql "42.2.4"]
@@ -14,6 +15,9 @@
                  [io.pedestal/pedestal.service "0.5.4"]
                  [io.pedestal/pedestal.jetty "0.5.4"]
 
+                 [ch.qos.logback/logback-classic "1.1.8" :exclusions [org.slf4j/slf4j-api]]
+                 [org.slf4j/jul-to-slf4j "1.7.22"]
+                 [org.slf4j/jcl-over-slf4j "1.7.22"]
                  [org.slf4j/log4j-over-slf4j "1.7.25"]]
 
   :main ^{:skip-aot true} clojure-todo-app.system

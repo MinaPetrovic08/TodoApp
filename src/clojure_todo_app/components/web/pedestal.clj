@@ -2,23 +2,23 @@
   (:require [com.stuartsierra.component :as component]
             [io.pedestal.http :as http]))
 
-(defn test? [service-map]
-  (= :test (:env service-map)))
+(defn test? [system-map]
+  (= :test (:env system-map)))
 
-(defrecord Pedestal [service-map service]
+(defrecord Pedestal [system-map system]
   component/Lifecycle
   (start [this]
-    (if service
+    (if system
       this
-      (cond-> service-map
+      (cond-> system-map
         true                      (http/create-server)  ;; always create http server
-        (not (test? service-map)) (http/start)  ;; start http server if not in testing environment
-        true                      ((partial assoc this :service)))))
+        (not (test? system-map)) (http/start)  ;; start http server if not in testing environment
+        true                      ((partial assoc this :system)))))
 
   (stop [this]
-    (when (and service (not (test? service-map)))
-      (http/stop service))
-    (assoc this :service nil)))
+    (when (and system (not (test? system-map)))
+      (http/stop system))
+    (assoc this :system nil)))
 
 (defn new-pedestal []
   (map->Pedestal {}))
