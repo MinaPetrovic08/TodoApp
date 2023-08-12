@@ -9,7 +9,7 @@
   {:env env
    ::http/routes routes/routes
    ::http/type :jetty
-   ::http/port 8082
+   ::http/port 8080
    ::http/resource-path "/public"
    ::http/join? false})
 

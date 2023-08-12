@@ -1,55 +1,31 @@
 (ns clojure-todo-app.system-test
-  (:require [io.pedestal.http :as http]
-            [io.pedestal.test :refer [response-for]]
-            [com.stuartsierra.component :as component]
-            [clojure.test :refer [deftest is are testing]]
-            [clojure-todo-app.system :as system]
-            [clojure-todo-app.components.web.routes :as routes]
-            [korma.db :as kdb]
-            [clojure-todo-app.components.web.todos :as todos]))
+  (:require
+   [com.stuartsierra.component :as component]
+   [clojure.test :refer :all]
+   [clojure-todo-app.system :as my-system]
+   [clojure-todo-app.components.web.tasks :as tasks]))
 
-(defrecord TestDB [db-config database]
-  component/Lifecycle
-  (start [this]
-    (let [db (kdb/create-db (kdb/sqlite3 {:db "testing.sqlite3"}))]
-      (kdb/default-connection db)
-      (todos/drop-table!)
-      (todos/create-table!)
-      (assoc this :database db)))
-  (stop [this]
-    (todos/drop-table!)
-    (kdb/default-connection nil)
-    (assoc this :database nil)))
+(def mock-db
+  {:query-all (fn [] [{:id 1 :name "task1"} {:id 2 :name "task2"}])
+   :add! (fn [task] (println "Adding task:" task))})
 
-(defn- new-test-db []
-  (map->TestDB {}))
+(deftest add-task-test
+  (testing "Add task increments total tasks"
+    (let [test-system (component/system-map
+                       :db mock-db
+                       :web (component/start (my-system/system :web)))
+          task-count (count (tasks/query-all))]
+      (tasks/add! "foo")
+      (is (= (inc task-count) (count (tasks/query-all)))))))
 
-  ;; -----------------------------------------------------------------------------
+(deftest delete-task-test
+  (testing "Delete task removes the task"
+    (let [test-system (component/system-map
+                       :db mock-db
+                       :web (component/start (my-system/system :web)))
+          initial-tasks (tasks/query-all)
+          deleted-task-id 1]
+      (tasks/delete! deleted-task-id)
+      (is (empty? (filter #(= (:id %) deleted-task-id) initial-tasks)))
+      (is (= (count initial-tasks) (count (tasks/query-all)))))))
 
-(def test-system
-  (assoc (system/system :test)
-         :db (new-test-db)))  ;; Inject TestDB for testing
-
-(defmacro with-system
-  [[bound-var test-system] & body]
-  (deftest greeting-test
-    (testing "Greeting route should print typical hello world."
-      (with-system [sut (system/system :test)]
-        (with-system [sut test-system]
-          (let [service (service-fn sut)
-                {:keys [status body]} (response-for service
-                                                    :get
-                                                    (routes/url-for :greet))]
-            (is (= 200 status))
-            (is (= "Hello, world!" body))))))
-
-    (deftest add-todo-test
-      (testing "Greeting route should print typical hello world."
-        (with-system [sut test-system]
-          (let [sum-total-todos (count (todos/query-all))]
-            (todos/add! "foo")
-            (is (= (inc sum-total-todos) (count (todos/query-all))))))))
-
-    (comment
-      (def mytestsystem (component/start test-system))
-      mytestsystem)))
