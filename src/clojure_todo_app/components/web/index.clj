@@ -10,12 +10,18 @@
             :type :submit
             :value "Toggle"}]])
 
+(defn- delete-task-index [task]
+  [:form#delete-task {:action (str "/task/delete?id=" (:id task)) :method :POST}
+   [:input {:name "id" :value (:id task) :hidden true}]
+   [:input {:class "btn btn-sm btn-dark" :type :submit :value "Delete"}]])
+
 (defn- tasks->rows []
   (for [task (sort-by :title (tasks/query-all))]
     [:tr
      [:td (:title task)]
      [:td (if (:done task) "✓" "🗴")]
-     [:td (toggle-task-index task)]]))
+     [:td (toggle-task-index task)]
+     [:td (delete-task-index task)]]))
 
 (defn base-template [& body]
   (ring-resp/response
@@ -60,6 +66,10 @@
 
 (defn toggle-task [{:keys [form-params]}]
   (tasks/toggle! (:id form-params))
+  (ring-resp/redirect "/"))
+
+(defn delete-task [{:keys [form-params]}]
+  (tasks/delete! (:id form-params))
   (ring-resp/redirect "/"))
 
 (defn respond-hello [request]

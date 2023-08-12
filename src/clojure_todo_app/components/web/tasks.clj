@@ -18,7 +18,7 @@
   (kc/insert task (kc/values {:title title})))
 
 (defn delete! [id]
-  (kc/delete task (kc/where {:id id})))
+  (kc/exec-raw (format "DELETE FROM tasks WHERE id = %s" id)))
 
 (defn toggle! [id]
   (kc/exec-raw (format "UPDATE tasks SET done = NOT done WHERE id = %s" id)))

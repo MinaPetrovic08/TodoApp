@@ -10,6 +10,7 @@
   #{["/" :get (conj common-interceptors `index/home-page) :route-name :index]
     ["/task/add" :post (conj common-interceptors `index/add-task) :route-name :task-add]
     ["/task/toggle" :post (conj common-interceptors `index/toggle-task) :route-name :task-toggle]
+    ["/task/delete" :post (conj common-interceptors `index/delete-task) :route-name :task-delete]
     ["/greet" :get index/respond-hello :route-name :greet]})
 
 
